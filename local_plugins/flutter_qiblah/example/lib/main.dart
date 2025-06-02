@@ -36,8 +36,9 @@ class _MyAppState extends State<MyApp> {
         body: FutureBuilder(
           future: _deviceSupport,
           builder: (_, AsyncSnapshot<bool?> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting)
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return LoadingIndicator();
+            }
             if (snapshot.hasError) {
               return Center(
                 child: Text("Error: ${snapshot.error.toString()}"),

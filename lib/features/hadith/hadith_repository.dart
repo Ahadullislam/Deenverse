@@ -40,16 +40,21 @@ class HadithRepository {
 
   static String _determineCategory(String text) {
     final textLower = text.toLowerCase();
-    if (textLower.contains('pray') || textLower.contains('salah'))
+    if (textLower.contains('pray') || textLower.contains('salah')) {
       return 'Prayer';
-    if (textLower.contains('charity') || textLower.contains('sadaqah'))
+    }
+    if (textLower.contains('charity') || textLower.contains('sadaqah')) {
       return 'Charity';
-    if (textLower.contains('fast') || textLower.contains('ramadan'))
+    }
+    if (textLower.contains('fast') || textLower.contains('ramadan')) {
       return 'Fasting';
-    if (textLower.contains('hajj') || textLower.contains('pilgrimage'))
+    }
+    if (textLower.contains('hajj') || textLower.contains('pilgrimage')) {
       return 'Pilgrimage';
-    if (textLower.contains('manners') || textLower.contains('character'))
+    }
+    if (textLower.contains('manners') || textLower.contains('character')) {
       return 'Manners';
+    }
     return 'Faith';
   }
 

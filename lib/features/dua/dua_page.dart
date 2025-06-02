@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dua_data.dart';
 import 'dua_favorites_repository.dart';
-import 'dua_notification_service.dart';
+// import 'dua_notification_service.dart'; // Disabled for now
 import 'package:timezone/data/latest.dart' as tz;
 
 class DuaPage extends StatefulWidget {
@@ -43,32 +43,6 @@ class _DuaPageState extends State<DuaPage> {
     _loadFavorites();
   }
 
-  Future<void> _scheduleReminder(DuaModel dua) async {
-    final now = TimeOfDay.now();
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: now,
-    );
-    if (picked != null) {
-      final nowDate = DateTime.now();
-      final scheduled = DateTime(
-          nowDate.year, nowDate.month, nowDate.day, picked.hour, picked.minute);
-      await DuaNotificationService.scheduleDuaReminder(
-        id: dua.title.hashCode,
-        title: dua.title,
-        body: dua.translation,
-        scheduledTime: scheduled.isAfter(nowDate)
-            ? scheduled
-            : scheduled.add(const Duration(days: 1)),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                'Reminder set for ${dua.title} at ${picked.format(context)}')),
-      );
-    }
-  }
-
   @override
   void dispose() {
     _audioPlayer.dispose();
@@ -90,7 +64,27 @@ class _DuaPageState extends State<DuaPage> {
       return matchesCategory && matchesSearch;
     }).toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('Dua & Azkar')),
+      appBar: AppBar(
+        title: const Text('দোআ (Dua)'),
+        backgroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.primary,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            tooltip: 'Show Favorites',
+            onPressed: () {
+              setState(() {
+                selectedCategory = 'All';
+                searchQuery = '';
+                filteredDuas.clear();
+                filteredDuas.addAll(
+                    duas.where((d) => favoriteTitles.contains(d.title)));
+              });
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -99,8 +93,10 @@ class _DuaPageState extends State<DuaPage> {
               children: [
                 TextField(
                   decoration: InputDecoration(
-                    hintText: 'Search Duas...',
-                    prefixIcon: Icon(Icons.search),
+                    hintText: 'দোআ খুঁজুন... (Search Duas)',
+                    prefixIcon: const Icon(Icons.search),
+                    filled: true,
+                    fillColor: Colors.grey[100],
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
@@ -146,11 +142,11 @@ class _DuaPageState extends State<DuaPage> {
                           ),
                           onPressed: () => _toggleFavorite(dua.title),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.alarm),
-                          tooltip: 'Set Reminder',
-                          onPressed: () => _scheduleReminder(dua),
-                        ),
+                        // IconButton(
+                        //   icon: const Icon(Icons.alarm),
+                        //   tooltip: 'Set Reminder',
+                        //   onPressed: () => _scheduleReminder(dua),
+                        // ),
                       ],
                     ),
                     children: [
@@ -169,7 +165,7 @@ class _DuaPageState extends State<DuaPage> {
                             Text('Transliteration:',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.green.shade800)),
+                                    color: Colors.green)),
                             Text(dua.transliteration,
                                 style: const TextStyle(
                                     fontStyle: FontStyle.italic)),
@@ -177,7 +173,7 @@ class _DuaPageState extends State<DuaPage> {
                             Text('Translation:',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.green.shade800)),
+                                    color: Colors.green)),
                             Text(dua.translation),
                             if (dua.audioAsset != null)
                               IconButton(

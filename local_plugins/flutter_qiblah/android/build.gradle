@@ -37,7 +37,7 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
-    namespace 'com.almoullim.qiblah'
+    namespace = "ml.medyas.flutter_qiblah" // Fixed for AGP compatibility
     
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
